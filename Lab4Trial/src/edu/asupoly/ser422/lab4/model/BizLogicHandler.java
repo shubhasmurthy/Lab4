@@ -44,6 +44,20 @@ public class BizLogicHandler {
 		return news.toArray(new NewsItemBean[0]);
 	}
 
+	public static final UserBean createNewSubscriber(String userId, String passwd) {
+		url = "ViewNews.jsp";
+		UserBean user = new UserBean(userId, passwd, UserBean.Role.SUBSCRIBER);
+		NewsDAOFactory.getTheDAO().createUser(user);
+		return user;
+	}
+
+	public static final UserBean createNewReporter(String userId, String passwd) {
+		url = "ViewNews.jsp";
+		UserBean user = new UserBean(userId, passwd, UserBean.Role.REPORTER);
+		NewsDAOFactory.getTheDAO().createUser(user);
+		return user;
+	}
+
 	public static final NewsItemBean getStoryItem(int newsID) {
 		url = "ViewStory.jsp";
 		return NewsDAOFactory.getTheDAO().getNewsItem(newsID);

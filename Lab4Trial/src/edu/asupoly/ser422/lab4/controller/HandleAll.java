@@ -39,12 +39,17 @@ public class HandleAll extends HttpServlet {
 		String action = request.getParameter("action");
 		PrintWriter out = response.getWriter();
 		if (action == null) {
-			NewsItemBean[] news = BizLogicHandler.getNews(null);
-			request.setAttribute("newsList", news);
+			populateNews(request, null);
 			RequestDispatcher dispatcher = request.getRequestDispatcher(BizLogicHandler.getUrl());
 			dispatcher.forward(request, response);
 		} else if (action.equals("goToLogin")) {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("login.html");
+			dispatcher.forward(request, response);
+		} else if (action.equals("viewNews")) {
+			HttpSession session = request.getSession(false);
+			UserBean user = (UserBean) session.getAttribute("user");
+			populateNews(request, user);
+			RequestDispatcher dispatcher = request.getRequestDispatcher("ViewNews.jsp");
 			dispatcher.forward(request, response);
 		} else if (action.equals("Login")) {
 			String userId = request.getParameter("userid");
@@ -58,8 +63,7 @@ public class HandleAll extends HttpServlet {
 					session.setAttribute("userName", userId);
 					session.setAttribute("password", passwd);
 					session.setAttribute("user", user);
-					NewsItemBean[] news = BizLogicHandler.getNews(user);
-					request.setAttribute("newsList", news);
+					populateNews(request, user);
 				} else {
 
 				}
@@ -75,16 +79,24 @@ public class HandleAll extends HttpServlet {
 		} else if (action.equals("A new subscriber")) {
 			String userId = request.getParameter("userid");
 			String passwd = request.getParameter("passwd");
-			UserBean user = new UserBean(userId, passwd, UserBean.Role.SUBSCRIBER);
-			NewsDAOFactory.getTheDAO().createUser(user);
-			RequestDispatcher dispatcher = request.getRequestDispatcher("ViewNews.jsp");
+			HttpSession session = request.getSession(true);
+			session.setAttribute("userName", userId);
+			session.setAttribute("password", passwd);
+			UserBean user = BizLogicHandler.createNewSubscriber(userId, passwd);
+			session.setAttribute("user", user);
+			populateNews(request, user);
+			RequestDispatcher dispatcher = request.getRequestDispatcher(BizLogicHandler.getUrl());
 			dispatcher.forward(request, response);
 		} else if (action.equals("A new reporter")) {
 			String userId = request.getParameter("userid");
 			String passwd = request.getParameter("passwd");
-			UserBean user = new UserBean(userId, passwd, UserBean.Role.REPORTER);
-			NewsDAOFactory.getTheDAO().createUser(user);
-			RequestDispatcher dispatcher = request.getRequestDispatcher("ViewNews.jsp");
+			HttpSession session = request.getSession(true);
+			session.setAttribute("userName", userId);
+			session.setAttribute("password", passwd);
+			UserBean user = BizLogicHandler.createNewReporter(userId, passwd);
+			session.setAttribute("user", user);
+			populateNews(request, user);
+			RequestDispatcher dispatcher = request.getRequestDispatcher(BizLogicHandler.getUrl());
 			dispatcher.forward(request, response);
 		} else if (action.equals("logout")) {
 			HttpSession session = request.getSession(false);
@@ -139,10 +151,14 @@ public class HandleAll extends HttpServlet {
 			UserBean user = (UserBean) request.getSession().getAttribute("user");
 			String comment = request.getParameter("Comment");
 			BizLogicHandler.storeComment(newsID, user.getUserId(), comment);
-			NewsItemBean[] news = BizLogicHandler.getNews(user);
-			request.setAttribute("newsList", news);
+			populateNews(request, user);
 			RequestDispatcher dispatcher = request.getRequestDispatcher(BizLogicHandler.getUrl());
 			dispatcher.forward(request, response);
 		}
+	}
+
+	private void populateNews(HttpServletRequest request, UserBean user) {
+		NewsItemBean[] news = BizLogicHandler.getNews(user);
+		request.setAttribute("newsList", news);
 	}
 }

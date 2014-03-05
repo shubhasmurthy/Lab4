@@ -14,8 +14,6 @@ public interface INewsDAO {
 
 	public NewsItemBean[] getNews();
 
-	public NewsItemBean[] getNews(UserBean user);
-
 	public NewsItemBean getNewsItem(int newsItemId);
 
 	public boolean updateNewsItem(int newsItemId, String newTitle, String newStory, boolean isPublic);

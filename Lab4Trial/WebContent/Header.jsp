@@ -15,7 +15,7 @@
 <table border="0" align="center">
 	<tr>
 		<td><a href="./about.html">About</a></td>
-		<td><a href="./ViewNews.jsp">View News</a></td>
+		<td><a href="controller?action=viewNews">View News</a></td>
 		<%
 		if(user!=null){
 			if(user.isReporter()){

@@ -1,8 +1,5 @@
 package edu.asupoly.ser422.lab4.dao;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Hashtable;
 
 import edu.asupoly.ser422.lab4.model.CommentBean;
@@ -34,34 +31,6 @@ public class NewsDefaultDAO implements INewsDAO {
 	public NewsItemBean[] getNews() {
 		synchronized (__news) {
 			return __news.values().toArray(new NewsItemBean[0]);
-		}
-	}
-
-	public NewsItemBean[] getNews(UserBean user) {
-		synchronized (__news) {
-			ArrayList<NewsItemBean> news = new ArrayList<NewsItemBean>();
-			if (user == null || user.getRole().equals(UserBean.Role.GUEST)) {
-				for (NewsItemBean nib : __news.values()) {
-					if (nib.isPublicStory()) {
-						news.add(nib);
-					}
-				}
-			} else if (user.getRole().equals(UserBean.Role.SUBSCRIBER)) {
-				// return __news.values().toArray(new NewsItemBean[0]);
-				news.addAll(__news.values());
-			} else {
-				for (NewsItemBean nib : __news.values()) {
-					if (nib.isPublicStory() || nib.getReporterId().equals(user.getUserId())) {
-						news.add(nib);
-					}
-				}
-			}
-			Collections.sort(news, new Comparator<NewsItemBean>() {
-				public int compare(NewsItemBean n1, NewsItemBean n2) {
-					return n2.getFavorite().compareTo(n1.getFavorite());
-				}
-			});
-			return news.toArray(new NewsItemBean[0]);
 		}
 	}
 
