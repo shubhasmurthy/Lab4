@@ -17,14 +17,20 @@ public class NewsDefaultDAO implements INewsDAO {
 		__users = new Hashtable<String, UserBean>();
 		__comments = new Hashtable<String, CommentBean>();
 
-		__news.put(1, new NewsItemBean(1, "Telangana1", "The worst stuff happened", "rep1"));
-		__news.put(2, new NewsItemBean(2, "Telangana2", "The worst  happened", "rep2"));
-		__news.put(3, new NewsItemBean(3, "Telangana3", "The  stuff happened", "rep3"));
-		__news.put(4, new NewsItemBean(4, "Telangana4", "The worst stuff", "rep1"));
-		__news.put(5, new NewsItemBean(5, "Telangana5", "The worst stuff", "rep1", false));
-		__news.put(6, new NewsItemBean(6, "Rep2 private story", "This is Rep2's private story", "rep2", false));
-		__users.put("sub1", new UserBean("sub1", "sub1", UserBean.Role.SUBSCRIBER));
-		__users.put("rep1", new UserBean("rep1", "rep1", UserBean.Role.REPORTER));
+		/*
+		 * __news.put(1, new NewsItemBean(1, "Telangana1",
+		 * "The worst stuff happened", "rep1")); __news.put(2, new
+		 * NewsItemBean(2, "Telangana2", "The worst  happened", "rep2"));
+		 * __news.put(3, new NewsItemBean(3, "Telangana3",
+		 * "The  stuff happened", "rep3")); __news.put(4, new NewsItemBean(4,
+		 * "Telangana4", "The worst stuff", "rep1")); __news.put(5, new
+		 * NewsItemBean(5, "Telangana5", "The worst stuff", "rep1", false));
+		 * __news.put(6, new NewsItemBean(6, "Rep2 private story",
+		 * "This is Rep2's private story", "rep2", false)); __users.put("sub1",
+		 * new UserBean("sub1", "sub1", UserBean.Role.SUBSCRIBER));
+		 * __users.put("rep1", new UserBean("rep1", "rep1",
+		 * UserBean.Role.REPORTER));
+		 */
 	}
 
 	@Override

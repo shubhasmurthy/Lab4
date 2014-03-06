@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,8 +36,6 @@ public class HandleAll extends HttpServlet {
 
 	private void handleIt(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 			IOException {
-		Cookie[] cookies=null;
-		String sessionid=null;
 		String action = request.getParameter("action");
 		PrintWriter out = response.getWriter();
 		if (action == null) {
@@ -176,23 +173,6 @@ public class HandleAll extends HttpServlet {
 			populateNews(request, user);
 			RequestDispatcher dispatcher = request.getRequestDispatcher(BizLogicHandler.getUrl());
 			dispatcher.forward(request, response);
-		}
-		else if(action.equals("addFav"))
-		{
-			/*
-			 * For displaying favorite stories
-			cookies = request.getCookies();
-			if(cookies!=null)
-			{
-				for (int i=0;i<cookies.length;i++)
-				{
-					if(cookies[i].getName().equals("sessionid"))
-						{sessionid = cookies[i].getValue();
-						break;
-						}//end if
-				}//end for
-				if(sessionid==null)}*/
-			
 		}
 	}
 

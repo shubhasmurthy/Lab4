@@ -26,7 +26,7 @@ public class NewsPeriodicDAO extends NewsDefaultDAO {
 		} else {
 			__store = __STATE_FILENAME;
 		}
-		// __loadState();
+		__loadState();
 
 		// Now create a timer
 		__timer = new Timer();
@@ -59,8 +59,8 @@ public class NewsPeriodicDAO extends NewsDefaultDAO {
 		try {
 			ois = new ObjectInputStream(new FileInputStream(__store));
 			__comments = (Hashtable<String, CommentBean>) ois.readObject();
-			if (ois.readObject() != null)
-				__users = (Hashtable<String, UserBean>) ois.readObject();
+			// if (ois.readObject() != null)
+			__users = (Hashtable<String, UserBean>) ois.readObject();
 			__news = (Hashtable<Integer, NewsItemBean>) ois.readObject();
 		} catch (Throwable t) {
 			System.out.println("Unable to load state file, proceeding empty!");
