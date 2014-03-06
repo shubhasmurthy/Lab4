@@ -21,7 +21,7 @@
 				out.println("<td><a href=\"controller?action=create\">Create New</a></td>");
 			}
 		}else{
-			out.println("<td><a href=\"controller?action=goToLogin\">Make me a subscriber</a></td>");
+			out.println("<td><a href=\"controller?action=goToLogin&role=Subscriber\">Make me a subscriber</a></td>");
 		}
 		%>
 		<td><a href="<%=pageName %>"><%=linkName %></a></td>

@@ -43,7 +43,7 @@ public class HandleAll extends HttpServlet {
 			RequestDispatcher dispatcher = request.getRequestDispatcher(BizLogicHandler.getUrl());
 			dispatcher.forward(request, response);
 		} else if (action.equals("goToLogin")) {
-			RequestDispatcher dispatcher = request.getRequestDispatcher("login.html");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("login.jsp");
 			dispatcher.forward(request, response);
 		} else if (action.equals("viewNews") || action.equals("Cancel")) {
 			HttpSession session = request.getSession(false);
@@ -54,21 +54,37 @@ public class HandleAll extends HttpServlet {
 		} else if (action.equals("Login")) {
 			String userId = request.getParameter("userid");
 			String passwd = request.getParameter("passwd");
-			if (userId == null || userId.length() == 0 || passwd == null || passwd.length() == 0) {
-				response.sendRedirect("login.html");
-			} else if (!userId.equals(passwd)) {
-				response.sendRedirect("login.html");
-			} else {
-				UserBean user = BizLogicHandler.validateUser(userId);
-				if (user != null) {
+			String role = request.getParameter("role");
+			if (role != null) {
+				if (userId == null || userId.length() == 0 || passwd == null || passwd.length() == 0) {
+					response.sendRedirect("login.jsp?role=Subscriber");
+				} else if (!userId.equals(passwd)) {
+					response.sendRedirect("login.jsp?role=Subscriber");
+				} else {
 					HttpSession session = request.getSession(true);
+					UserBean user = BizLogicHandler.createNewSubscriber(userId, passwd);
 					session.setAttribute("user", user);
 					populateNews(request, user);
-				} else {
-
+					RequestDispatcher dispatcher = request.getRequestDispatcher(BizLogicHandler.getUrl());
+					dispatcher.forward(request, response);
 				}
-				RequestDispatcher dispatcher = request.getRequestDispatcher(BizLogicHandler.getUrl());
-				dispatcher.forward(request, response);
+			} else {
+				if (userId == null || userId.length() == 0 || passwd == null || passwd.length() == 0) {
+					response.sendRedirect("login.jsp");
+				} else if (!userId.equals(passwd)) {
+					response.sendRedirect("login.jsp");
+				} else {
+					UserBean user = BizLogicHandler.validateUser(userId);
+					if (user != null) {
+						HttpSession session = request.getSession(true);
+						session.setAttribute("user", user);
+						populateNews(request, user);
+					} else {
+
+					}
+					RequestDispatcher dispatcher = request.getRequestDispatcher(BizLogicHandler.getUrl());
+					dispatcher.forward(request, response);
+				}
 			}
 		} else if (action.equals("about")) {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("about.jsp");
@@ -82,8 +98,6 @@ public class HandleAll extends HttpServlet {
 			String userId = request.getParameter("userid");
 			String passwd = request.getParameter("passwd");
 			HttpSession session = request.getSession(true);
-			session.setAttribute("userName", userId);
-			session.setAttribute("password", passwd);
 			UserBean user = BizLogicHandler.createNewSubscriber(userId, passwd);
 			session.setAttribute("user", user);
 			populateNews(request, user);
@@ -93,8 +107,6 @@ public class HandleAll extends HttpServlet {
 			String userId = request.getParameter("userid");
 			String passwd = request.getParameter("passwd");
 			HttpSession session = request.getSession(true);
-			session.setAttribute("userName", userId);
-			session.setAttribute("password", passwd);
 			UserBean user = BizLogicHandler.createNewReporter(userId, passwd);
 			session.setAttribute("user", user);
 			populateNews(request, user);

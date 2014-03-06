@@ -28,14 +28,16 @@
         %>    
 		<p>Fill in all fields to add your news to NEW news.</p>
 		<form action="controller" method="post">
-    		Title: <input type="text" size="50" name="title" value="<%= title%>" /><br/>
-    		Story: <textarea cols="50" rows="15" name="story" /><%= story%></textarea>
-			<br/>
+    		Title: 
+    		<input type="text" size="50" name="title" value="<%= title%>" /><br/><br/>
+    		Story: 
+    		<textarea cols="50" rows="15" name="story" /><%= story%></textarea>
+			<br/><br/>
 			Make this:
 			<br />
 			<input type="radio" name="isPublic" value="isPublic" <%= isPublicChecked%>>Public story 
 			<input type="radio" name="isPublic" value="subscribersOnly" <%= isSubscriberChecked%>>Subscribers only
-			<br/>
+			<br/><br/><br/><br/>
 			<%
 			String action = request.getParameter("action");
 			if(action.equals("create")){
