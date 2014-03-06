@@ -21,7 +21,7 @@
 <%NewsItemBean newsItem = (NewsItemBean) request.getAttribute("newsItem");
 %>
 <input type="hidden" name="newsid" value="<%=newsItem.getItemId()%>">
-<input type="submit" name="action" value="Add as favorite"  align="right"/><input type="submit" name="action" value="Remove as favorite"  align="right"/>
+<input type="submit" name="controller?action=addFav" value="Add as favorite"  align="right"/><input type="submit" name="action" value="Remove as favorite"  align="right"/>
 <h2><%= newsItem.getItemTitle() %></h2> 
 <br />
 <%= newsItem.getItemStory() %>
