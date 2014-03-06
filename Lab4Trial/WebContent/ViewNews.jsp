@@ -8,19 +8,18 @@
 <h2>NEW News</h2>
 <jsp:include page="Header.jsp" />
 <%
-	String uname = (String) request.getSession().getAttribute("userName");
+	UserBean user = (UserBean) request.getSession().getAttribute("user");
 %>
 Welcome
 <%
-	if (uname != null)
-		out.println(uname);
+	if (user != null)
+		out.println(user.getUserId());
 %>!
 <br />
 <br />
 <br />
 <table border="0" align="left">
 <%
-	UserBean user = NewsDAOFactory.getTheDAO().getUser(uname);
 	NewsItemBean[] news = (NewsItemBean[]) request.getAttribute("newsList");
 	for (int i = 0; i < news.length; i++) {
 		out.println("<tr>");
@@ -33,7 +32,6 @@ Welcome
 		}
 		out.println("</tr>");
 		out.println("<tr><td colspan=\"50\"><hr></td></tr>");
-		//out.println("<input type=\"hidden\" name=\"storyid\" value=\""+news[i].getItemId()+"\">");
 	}
 %>
 </table>

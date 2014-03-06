@@ -19,7 +19,6 @@ public class BizLogicHandler {
 		url = "ViewNews.jsp";
 		ArrayList<NewsItemBean> news = new ArrayList<NewsItemBean>();
 		NewsItemBean[] newsArray = NewsDAOFactory.getTheDAO().getNews();
-		// news.addAll(NewsDAOFactory.getTheDAO().getNews());
 		if (user == null || user.getRole().equals(UserBean.Role.GUEST)) {
 			for (NewsItemBean nib : newsArray) {
 				if (nib.isPublicStory()) {
@@ -27,7 +26,6 @@ public class BizLogicHandler {
 				}
 			}
 		} else if (user.getRole().equals(UserBean.Role.SUBSCRIBER)) {
-			// return __news.values().toArray(new NewsItemBean[0]);
 			news.addAll(Arrays.asList(newsArray));
 		} else {
 			for (NewsItemBean nib : newsArray) {
@@ -66,6 +64,21 @@ public class BizLogicHandler {
 	public static final void storeComment(int newsItemId, String userid, String comment) {
 		url = "ViewNews.jsp";
 		NewsDAOFactory.getTheDAO().storeComment(newsItemId, userid, comment);
+	}
+
+	public static final void addStory(String title, String story, String userid, boolean isPublic) {
+		url = "ViewNews.jsp";
+		NewsDAOFactory.getTheDAO().createNewsItem(new NewsItemBean(title, story, userid, isPublic));
+	}
+
+	public static final void removeStory(int newsID) {
+		url = "ViewNews.jsp";
+		NewsDAOFactory.getTheDAO().deleteNewsItem(newsID);
+	}
+
+	public static final void updateStory(int newsID, String title, String story, boolean isPublic) {
+		url = "ViewNews.jsp";
+		NewsDAOFactory.getTheDAO().updateNewsItem(newsID, title, story, isPublic);
 	}
 
 	public static final UserBean validateUser(String uID) {

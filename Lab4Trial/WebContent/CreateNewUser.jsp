@@ -10,7 +10,8 @@
 		<input type="hidden" name="passwd" value="<%= request.getParameter("passwd")%>">
 		Make me <input type="submit" name="action" value="A new subscriber" />
 		<input type="submit" name="action" value="A new reporter" /> <br />
-		<br /> <a href="index.jsp">Cancel</a>
+		<br /> <a href="login.html">Cancel</a>
+		<a href="controller">Go back to news</a>
 	</form>
 </body>
 </html>
