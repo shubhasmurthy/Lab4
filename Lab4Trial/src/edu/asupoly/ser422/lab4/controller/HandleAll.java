@@ -134,10 +134,16 @@ public class HandleAll extends HttpServlet {
 		} else if (action.equals("Add as favorite")) {
 			// int newsID = Integer.parseInt(request.getParameter("newsid"));
 			boolean setCookie = false;
-			String userId = request.getParameter("userid");
-			String passwd = request.getParameter("passwd");
-			String role = request.getParameter("role");
-
+			NewsItemBean nib = BizLogicHandler.getStoryItem(Integer
+					.parseInt(request.getParameter("newsid")));
+			request.setAttribute("newsItem", nib);
+			String userId = null,role=null;
+			HttpSession session = request.getSession(false);
+			UserBean user = (UserBean) session.getAttribute("user");
+			if(user!=null){
+			 userId = user.getUserId();
+			 role = user.getRole().toString();
+			}
 			if (userId == null || role.contains("Guest")) {
 				String newsId = request.getParameter("newsid");
 				Cookie[] cookie = request.getCookies();
@@ -146,7 +152,9 @@ public class HandleAll extends HttpServlet {
 					Cookie newCookie = new Cookie("newsid", newsId);
 					newCookie.setMaxAge(86400);
 					response.addCookie(newCookie);
-					response.sendRedirect(request.getContextPath());
+					RequestDispatcher dispatcher = request
+							.getRequestDispatcher("ViewStory.jsp");
+					dispatcher.forward(request, response);
 
 				} else {
 					int i = 0;
@@ -157,7 +165,10 @@ public class HandleAll extends HttpServlet {
 							cookie[i].setValue(newsId);
 							cookie[i].setMaxAge(86400);
 							setCookie = true;
-							break;
+							response.addCookie(cookie[i]);
+							RequestDispatcher dispatcher = request
+									.getRequestDispatcher("ViewStory.jsp");
+							dispatcher.forward(request, response);
 						}
 					}
 
@@ -165,7 +176,9 @@ public class HandleAll extends HttpServlet {
 						Cookie newCookie = new Cookie("newsid", newsId);
 						newCookie.setMaxAge(86400);
 						response.addCookie(newCookie);
-						response.sendRedirect(request.getContextPath());
+						RequestDispatcher dispatcher = request
+								.getRequestDispatcher("ViewStory.jsp");
+						dispatcher.forward(request, response);
 					}
 				}
 			} else if (role.contains("SUBSCRIBER")) {
@@ -187,7 +200,10 @@ public class HandleAll extends HttpServlet {
 							cookie[i].setValue(newsId);
 							cookie[i].setMaxAge(86400);
 							setCookie = true;
-							break;
+							response.addCookie(cookie[i]);
+							RequestDispatcher dispatcher = request
+									.getRequestDispatcher("ViewStory.jsp");
+							dispatcher.forward(request, response);
 						}
 					}
 
@@ -195,7 +211,9 @@ public class HandleAll extends HttpServlet {
 						Cookie newCookie = new Cookie(subCookie, newsId);
 						newCookie.setMaxAge(86400);
 						response.addCookie(newCookie);
-						response.sendRedirect(request.getContextPath());
+						RequestDispatcher dispatcher = request
+								.getRequestDispatcher("ViewStory.jsp");
+						dispatcher.forward(request, response);
 					}
 				}
 			} else if (role.contains("REPORTER")) {
@@ -206,7 +224,9 @@ public class HandleAll extends HttpServlet {
 				{
 					Cookie newCookie = new Cookie(repCookie, newsId);
 					response.addCookie(newCookie);
-					response.sendRedirect(request.getContextPath());
+					RequestDispatcher dispatcher = request
+							.getRequestDispatcher("ViewStory.jsp");
+					dispatcher.forward(request, response);
 
 				} else {
 					int i = 0;
@@ -214,7 +234,13 @@ public class HandleAll extends HttpServlet {
 						if (cookie[i].getName().contains(repCookie)) {
 							String oldCookie = cookie[i].getValue();
 							newsId = oldCookie + "\t" + newsId;
-							break;
+							cookie[i].setValue(newsId);
+							cookie[i].setMaxAge(86400);
+							setCookie = true;
+							response.addCookie(cookie[i]);
+							RequestDispatcher dispatcher = request
+									.getRequestDispatcher("ViewStory.jsp");
+							dispatcher.forward(request, response);
 						}
 					}
 
@@ -222,18 +248,100 @@ public class HandleAll extends HttpServlet {
 						Cookie newCookie = new Cookie(repCookie, newsId);
 						newCookie.setMaxAge(86400);
 						response.addCookie(newCookie);
-						response.sendRedirect(request.getContextPath());
+						RequestDispatcher dispatcher = request
+								.getRequestDispatcher("ViewStory.jsp");
+						dispatcher.forward(request, response);
 					}
 				}
 			}
 		} else if (action.equals("Remove as favorite")) {
-			String userId = request.getParameter("userid");
-			String passwd = request.getParameter("passwd");
-			String role = request.getParameter("role");
+			NewsItemBean nib = BizLogicHandler.getStoryItem(Integer
+					.parseInt(request.getParameter("newsid")));
+			request.setAttribute("newsItem", nib);
+			HttpSession session = request.getSession(false);
+			UserBean user = (UserBean) session.getAttribute("user");
+			String userId = user.getUserId();
+			String role = user.getRole().toString();
 			
-			if(role==null || role.contains("GUEST"))
-			{
+			Cookie[] cookie  = request.getCookies();
+			if (cookie==null)
+				{RequestDispatcher dispatcher = request
+				.getRequestDispatcher("ViewStory.jsp");
+		dispatcher.forward(request, response);}
+			if (role == null || role.contains("GUEST")) {
+				String newsId = request.getParameter("newsid");
+				if (cookie != null) {
+					int i = 0;
+					for (i = 0; i < cookie.length; i++) {
+						if (cookie[i].getName().contains("newsid")) {
+							String[] newsArray = cookie[i].getValue().split(
+									"\t");
+							String newCookieValue = "";
+							for (int j = 0; j < newsArray.length; j++) {
+								if (!newsArray[j].contentEquals(newsId))
+									newCookieValue = newCookieValue + "\t"
+											+ newsArray[j];
+							}
+							cookie[i].setValue(newCookieValue);
+							cookie[i].setMaxAge(86400);
+							response.addCookie(cookie[i]);
+							
+						}
+					}
+					RequestDispatcher dispatcher = request
+							.getRequestDispatcher("ViewStory.jsp");
+					dispatcher.forward(request, response);
+				}
+			} else if (role.contains("SUBSCRIBER")) {
+				String newsId = request.getParameter("newsid");
+				String subCookie = "sub" + userId + "newsid";
+				if (cookie != null) {
+					int i = 0;
+					for (i = 0; i < cookie.length; i++) {
+						if (cookie[i].getName().contains(subCookie)) {
+							String[] newsArray = cookie[i].getValue().split(
+									"\t");
+							String newCookieValue = "";
+							for (int j = 0; j < newsArray.length; j++) {
+								if (!newsArray[j].contentEquals(newsId))
+									newCookieValue = newCookieValue + "\t"
+											+ newsArray[j];
+							}
+							cookie[i].setValue(newCookieValue);
+							cookie[i].setMaxAge(86400);
+							response.addCookie(cookie[i]);
+							
+						}
+					}
+					RequestDispatcher dispatcher = request
+							.getRequestDispatcher("ViewStory.jsp");
+					dispatcher.forward(request, response);
+				}
 				
+			} else if (role.contains("REPORTER")) {
+				String newsId = request.getParameter("newsid");
+				String repCookie = "rep" + userId + "newsid";
+				if (cookie != null) {
+					int i = 0;
+					for (i = 0; i < cookie.length; i++) {
+						if (cookie[i].getName().contains(repCookie)) {
+							String[] newsArray = cookie[i].getValue().split(
+									"\t");
+							String newCookieValue = "";
+							for (int j = 0; j < newsArray.length; j++) {
+								if (!newsArray[j].contentEquals(newsId))
+									newCookieValue = newCookieValue + "\t"
+											+ newsArray[j];
+							}
+							cookie[i].setValue(newCookieValue);
+							cookie[i].setMaxAge(86400);
+							response.addCookie(cookie[i]);
+						}
+					}
+					RequestDispatcher dispatcher = request
+							.getRequestDispatcher("ViewStory.jsp");
+					dispatcher.forward(request, response);
+				}
 			}
 
 		} else if (action.equals("create")) {
