@@ -48,23 +48,23 @@ public class HandleAll extends HttpServlet {
 		} else if (action.equals("goToLogin")) {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("login.html");
 			dispatcher.forward(request, response);
-		} else if (action.equals("viewNews")) {
+		} else if (action.equals("viewNews") || action.equals("Cancel")) {
 			HttpSession session = request.getSession(false);
 			UserBean user = (UserBean) session.getAttribute("user");
 			populateNews(request, user);
-			RequestDispatcher dispatcher = request.getRequestDispatcher("ViewNews.jsp");
+			RequestDispatcher dispatcher = request.getRequestDispatcher(BizLogicHandler.getUrl());
 			dispatcher.forward(request, response);
 		} else if (action.equals("Login")) {
 			String userId = request.getParameter("userid");
 			String passwd = request.getParameter("passwd");
 			if (userId == null || userId.length() == 0 || passwd == null || passwd.length() == 0) {
 				response.sendRedirect("login.html");
+			} else if (!userId.equals(passwd)) {
+				response.sendRedirect("login.html");
 			} else {
 				UserBean user = BizLogicHandler.validateUser(userId);
 				if (user != null) {
 					HttpSession session = request.getSession(true);
-					session.setAttribute("userName", userId);
-					session.setAttribute("password", passwd);
 					session.setAttribute("user", user);
 					populateNews(request, user);
 				} else {
@@ -73,7 +73,9 @@ public class HandleAll extends HttpServlet {
 				RequestDispatcher dispatcher = request.getRequestDispatcher(BizLogicHandler.getUrl());
 				dispatcher.forward(request, response);
 			}
-
+		} else if (action.equals("about")) {
+			RequestDispatcher dispatcher = request.getRequestDispatcher("about.jsp");
+			dispatcher.forward(request, response);
 		} else if (action.equals("ViewStory")) {
 			NewsItemBean nib = BizLogicHandler.getStoryItem(Integer.parseInt(request.getParameter("newsid")));
 			request.setAttribute("newsItem", nib);
@@ -121,32 +123,37 @@ public class HandleAll extends HttpServlet {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("CreateNewStory.jsp");
 			dispatcher.forward(request, response);
 		} else if (action.equals("Add")) {
-			String userid = (String) request.getSession().getAttribute("userName");
+			UserBean user = (UserBean) request.getSession().getAttribute("user");
 			String title = request.getParameter("title");
 			String story = request.getParameter("story");
-			boolean isPublic = request.getParameter("isPublic") == null ? false : true;
-			NewsDAOFactory.getTheDAO().createNewsItem(new NewsItemBean(title, story, userid, isPublic));
-			RequestDispatcher dispatcher = request.getRequestDispatcher("ViewNews.jsp");
+			boolean isPublic = request.getParameter("isPublic").equals("subscribersOnly") ? false : true;
+			BizLogicHandler.addStory(title, story, user.getUserId(), isPublic);
+			populateNews(request, user);
+			RequestDispatcher dispatcher = request.getRequestDispatcher(BizLogicHandler.getUrl());
 			dispatcher.forward(request, response);
 		} else if (action.equals("Update")) {
-			String userid = (String) request.getSession().getAttribute("userName");
+			out.println("Here");
+			UserBean user = (UserBean) request.getSession().getAttribute("user");
 			String title = request.getParameter("title");
 			String story = request.getParameter("story");
 			int newsID = Integer.parseInt(request.getParameter("newsid"));
-			boolean isPublic = request.getParameter("isPublic") == null ? false : true;
-			NewsDAOFactory.getTheDAO().updateNewsItem(newsID, title, story, isPublic);
-			RequestDispatcher dispatcher = request.getRequestDispatcher("ViewNews.jsp");
+			boolean isPublic = request.getParameter("isPublic").equals("subscribersOnly") ? false : true;
+			BizLogicHandler.updateStory(newsID, title, story, isPublic);
+			populateNews(request, user);
+			RequestDispatcher dispatcher = request.getRequestDispatcher(BizLogicHandler.getUrl());
 			dispatcher.forward(request, response);
 		} else if (action.equals("delete")) {
 			int newsID = Integer.parseInt(request.getParameter("newsid"));
-			String userid = (String) request.getSession().getAttribute("userName");
-			NewsDAOFactory.getTheDAO().deleteNewsItem(newsID);
-			RequestDispatcher dispatcher = request.getRequestDispatcher("ViewNews.jsp");
+			UserBean user = (UserBean) request.getSession().getAttribute("user");
+			BizLogicHandler.removeStory(newsID);
+			populateNews(request, user);
+			RequestDispatcher dispatcher = request.getRequestDispatcher(BizLogicHandler.getUrl());
 			dispatcher.forward(request, response);
 		} else if (action.equals("edit")) {
 			int newsID = Integer.parseInt(request.getParameter("newsid"));
-			String userid = (String) request.getSession().getAttribute("userName");
-			NewsDAOFactory.getTheDAO().deleteNewsItem(newsID);
+			UserBean userid = (UserBean) request.getSession().getAttribute("user");
+			NewsItemBean nib = BizLogicHandler.getStoryItem(newsID);
+			request.setAttribute("newsItem", nib);
 			RequestDispatcher dispatcher = request.getRequestDispatcher("CreateNewStory.jsp");
 			dispatcher.forward(request, response);
 		} else if (action.equals("comment")) {

@@ -8,18 +8,18 @@
 	<jsp:include page="Header.jsp" />
 <% 
 	    String hideIt = "style=\"display: none;\"";
-		String uname = (String) request.getSession().getAttribute("userName");
-		UserBean user = NewsDAOFactory.getTheDAO().getUser(uname);
+		UserBean user = (UserBean) request.getSession().getAttribute("user");
+		NewsItemBean newsItem = (NewsItemBean) request.getAttribute("newsItem");
 	    if(user!=null){
 	    	if(user.isSubscriber()){
 		    	hideIt = "";
+	    	}else if(user.isReporter() && user.getUserId().equals(newsItem.getReporterId())){
+	    		hideIt = "";
 	    	}
 	    }
 %>
 <br />
 <br />
-<%NewsItemBean newsItem = (NewsItemBean) request.getAttribute("newsItem");
-%>
 <input type="hidden" name="newsid" value="<%=newsItem.getItemId()%>">
 <input type="submit" name="controller?action=addFav" value="Add as favorite"  align="right"/><input type="submit" name="action" value="Remove as favorite"  align="right"/>
 <h2><%= newsItem.getItemTitle() %></h2> 
@@ -51,7 +51,10 @@ Comments:
 <textarea rows="4" cols="50" name="Comment"></textarea>
 <input type="submit" name="action" value="comment" />
 </div>
-
-	</form>
+<br />
+<br />
+<br />
+<a href="controller">Go back to news</a>
+</form>
 </body>
 </html>
