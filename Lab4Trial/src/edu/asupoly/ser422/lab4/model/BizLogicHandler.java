@@ -1,45 +1,72 @@
 package edu.asupoly.ser422.lab4.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.StringTokenizer;
 
 import edu.asupoly.ser422.lab4.dao.NewsDAOFactory;
 
 public class BizLogicHandler {
 	private static String url = "";
 
-	/*
-	 * public static final NewsItemBean[] getNews() { url = "ViewNews.jsp";
-	 * return NewsDAOFactory.getTheDAO().getNews(); }
-	 */
-
-	public static final NewsItemBean[] getNews(UserBean user) {
+	public static final NewsItemBean[] getNews(UserBean user, String cookieValue) {
 		url = "ViewNews.jsp";
 		ArrayList<NewsItemBean> news = new ArrayList<NewsItemBean>();
 		NewsItemBean[] newsArray = NewsDAOFactory.getTheDAO().getNews();
+		String newsID;
 		if (user == null || user.getRole().equals(UserBean.Role.GUEST)) {
+			if (cookieValue != null) {
+				StringTokenizer st = new StringTokenizer(cookieValue, " ");
+				while (st.hasMoreElements()) {
+					newsID = st.nextToken();
+					NewsItemBean nib = NewsDAOFactory.getTheDAO().getNewsItem(Integer.parseInt(newsID));
+					if (nib.isPublicStory()) {
+						news.add(nib);
+					}
+				}
+			}
 			for (NewsItemBean nib : newsArray) {
-				if (nib.isPublicStory()) {
-					news.add(nib);
+				if (!hasAlready(news, nib.getItemId())) {
+					if (nib.isPublicStory()) {
+						news.add(nib);
+					}
 				}
 			}
 		} else if (user.getRole().equals(UserBean.Role.SUBSCRIBER)) {
-			news.addAll(Arrays.asList(newsArray));
-		} else {
+			ArrayList<Integer> favList = user.getFavorites();
+			if (favList.size() != 0) {
+				for (Integer i : favList) {
+					news.add(NewsDAOFactory.getTheDAO().getNewsItem(i));
+				}
+			}
 			for (NewsItemBean nib : newsArray) {
-				if (nib.isPublicStory() || nib.getReporterId().equals(user.getUserId())) {
+				if (!hasAlready(news, nib.getItemId())) {
 					news.add(nib);
 				}
 			}
-		}
-		Collections.sort(news, new Comparator<NewsItemBean>() {
-			public int compare(NewsItemBean n1, NewsItemBean n2) {
-				return n2.getFavorite().compareTo(n1.getFavorite());
+		} else {
+			ArrayList<Integer> favList = user.getFavorites();
+			if (favList.size() != 0) {
+				for (Integer i : favList) {
+					news.add(NewsDAOFactory.getTheDAO().getNewsItem(i));
+				}
 			}
-		});
+			for (NewsItemBean nib : newsArray) {
+				if (!hasAlready(news, nib.getItemId())) {
+					if (nib.isPublicStory() || nib.getReporterId().equals(user.getUserId())) {
+						news.add(nib);
+					}
+				}
+			}
+		}
 		return news.toArray(new NewsItemBean[0]);
+	}
+
+	private static final boolean hasAlready(ArrayList<NewsItemBean> news, int newsID) {
+		for (NewsItemBean n : news) {
+			if (n.getItemId() == newsID)
+				return true;
+		}
+		return false;
 	}
 
 	public static final UserBean createNewSubscriber(String userId, String passwd) {
@@ -56,9 +83,30 @@ public class BizLogicHandler {
 		return user;
 	}
 
-	public static final NewsItemBean getStoryItem(int newsID) {
+	public static final NewsItemBean getStoryItem(UserBean user, int newsID, String cookieValue) {
 		url = "ViewStory.jsp";
-		return NewsDAOFactory.getTheDAO().getNewsItem(newsID);
+		NewsItemBean newsItem = NewsDAOFactory.getTheDAO().getNewsItem(newsID);
+		if (user != null) {
+			/*
+			 * if (user.isFavorite(newsID)) { newsItem.markAsFavorite(); } else
+			 * { newsItem.unMarkAsFavorite(); }
+			 */
+		} else {
+			String newsId;
+			int newsidAsInt;
+			if (cookieValue != null) {
+				StringTokenizer st = new StringTokenizer(cookieValue, " ");
+				while (st.hasMoreElements()) {
+					newsId = st.nextToken();
+					newsidAsInt = Integer.parseInt(newsId);
+					/*
+					 * if (newsidAsInt == newsID) { newsItem.markAsFavorite();
+					 * break; }
+					 */
+				}
+			}
+		}
+		return newsItem;
 	}
 
 	public static final void storeComment(int newsItemId, String userid, String comment) {
@@ -95,5 +143,37 @@ public class BizLogicHandler {
 
 	public static final String getUrl() {
 		return url;
+	}
+
+	public static final void addUserFavorite(UserBean user, int newsID) {
+		NewsDAOFactory.getTheDAO().storeFavorite(user, newsID);
+	}
+
+	public static final void deleteUserFavorite(UserBean user, int newsID) {
+		NewsDAOFactory.getTheDAO().removeFavorite(user, newsID);
+	}
+
+	public static boolean isFav(UserBean user, String cookieValue, int newsID) {
+		if (user != null) {
+			if (user.isFavorite(newsID)) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			String newsId;
+			int newsidAsInt;
+			if (cookieValue != null) {
+				StringTokenizer st = new StringTokenizer(cookieValue, " ");
+				while (st.hasMoreElements()) {
+					newsId = st.nextToken();
+					newsidAsInt = Integer.parseInt(newsId);
+					if (newsidAsInt == newsID) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 	}
 }

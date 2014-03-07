@@ -13,8 +13,8 @@ public class NewsItemBean implements java.io.Serializable {
 	private String itemStory;
 	private Date itemDate;
 	private String reporterId;
-	private int favoriteCount;
 	private boolean isPublic;
+	// private boolean isFavorite;
 	private ArrayList<CommentBean> comments = new ArrayList<CommentBean>();
 
 	// This constructor is used for a new news item
@@ -33,7 +33,7 @@ public class NewsItemBean implements java.io.Serializable {
 		itemDate = new Date();
 		itemId = id;
 		isPublic = true;
-		favoriteCount = 0;
+		// isFavorite = false;
 	}
 
 	// This constructor is used for an existing, i.e. coming from datastore
@@ -43,13 +43,25 @@ public class NewsItemBean implements java.io.Serializable {
 		reporterId = rid;
 		itemDate = new Date();
 		itemId = id;
+		// isFavorite = false;
 		isPublic = isPub;
-		favoriteCount = 0;
 	}
 
 	public int getItemId() {
 		return itemId;
 	}
+
+	/*
+	 * public void markAsFavorite() { isFavorite = true; }
+	 */
+
+	/*
+	 * public void unMarkAsFavorite() { isFavorite = false; }
+	 */
+
+	/*
+	 * public boolean isFavorite() { return isFavorite; }
+	 */
 
 	public boolean isPublicStory() {
 		return isPublic;
@@ -98,17 +110,5 @@ public class NewsItemBean implements java.io.Serializable {
 
 	public CommentBean[] getComments() {
 		return comments.toArray(new CommentBean[0]);
-	}
-
-	public void addFavorite() {
-		this.favoriteCount++;
-	}
-
-	public void removeFavorite() {
-		this.favoriteCount--;
-	}
-
-	public Integer getFavorite() {
-		return (Integer) this.favoriteCount;
 	}
 }

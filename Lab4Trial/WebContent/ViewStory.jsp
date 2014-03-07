@@ -10,19 +10,36 @@
 	    String hideIt = "style=\"display: none;\"";
 		UserBean user = (UserBean) request.getSession().getAttribute("user");
 		NewsItemBean newsItem = (NewsItemBean) request.getAttribute("newsItem");
+		Boolean isFav = (Boolean) request.getAttribute("isFav");
 	    if(user!=null){
 	    	if(user.isSubscriber()){
 		    	hideIt = "";
 	    	}else if(user.isReporter() && user.getUserId().equals(newsItem.getReporterId())){
 	    		hideIt = "";
-	    	}
+	    	}	    	
 	    }
+	    String addFavBtn, remFavBtn;
+	    if(isFav){
+	    	addFavBtn = "hidden=true";
+	    	remFavBtn = "";
+	    }else{
+	    	addFavBtn = "";
+	    	remFavBtn = "hidden=true";
+	    }
+	    /* 
+	    if(newsItem.isFavorite()){
+	    	addFavBtn = "hidden=true";
+	    	remFavBtn = "";
+	    }else{
+	    	addFavBtn = "";
+	    	remFavBtn = "hidden=true";
+	    } */
+	    
 %>
 <br />
 <br />
 <input type="hidden" name="newsid" value="<%=newsItem.getItemId()%>">
-<input type="submit" name="action" value="Add as favorite"  align="right"/>
-<input type="submit" name="action" value="Remove as favorite"  align="right"/>
+<input type="submit" name="action" value="Add favorite" <%=addFavBtn %> align="right"/><input type="submit" name="action" value="Remove favorite" <%=remFavBtn %> align="right"/>
 <h2><%= newsItem.getItemTitle() %></h2> 
 <br />
 <%= newsItem.getItemStory() %>
@@ -55,7 +72,7 @@ Comments:
 <br />
 <br />
 <br />
-<a href="controller">Go back to news</a>
+<a href="controller?action=viewNews">Go back to news</a>
 </form>
 </body>
 </html>

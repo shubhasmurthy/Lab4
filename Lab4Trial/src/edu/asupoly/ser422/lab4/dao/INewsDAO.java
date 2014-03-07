@@ -20,7 +20,7 @@ public interface INewsDAO {
 
 	public boolean deleteNewsItem(int newsItemId);
 
-	public boolean storeFavorite(int newsItemId);
+	public boolean storeFavorite(UserBean user, int newsItemId);
 
-	public boolean removeFavorite(int newsItemId);
+	public boolean removeFavorite(UserBean user, int newsItemId);
 }

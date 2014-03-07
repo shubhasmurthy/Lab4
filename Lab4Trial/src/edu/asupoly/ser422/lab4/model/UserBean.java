@@ -1,5 +1,7 @@
 package edu.asupoly.ser422.lab4.model;
 
+import java.util.ArrayList;
+
 public class UserBean implements java.io.Serializable {
 	private static final long serialVersionUID = -1408433159918540612L;
 
@@ -23,17 +25,37 @@ public class UserBean implements java.io.Serializable {
 	private String userId;
 	private String passwd;
 	private Role role;
+	private ArrayList<Integer> favorites;
 
 	public UserBean(String id, String passwd, Role r) {
 		this.userId = id;
 		this.passwd = passwd;
 		this.role = r;
+		favorites = new ArrayList<Integer>();
 	}
 
 	public UserBean(UserBean user, Role newRole) {
 		this.userId = user.userId;
 		this.passwd = user.passwd;
 		this.role = newRole;
+	}
+
+	public ArrayList<Integer> getFavorites() {
+		return favorites;
+	}
+
+	public void addToFavorites(int newsID) {
+		favorites.add(newsID);
+	}
+
+	public void removeFromFavorites(int newsID) {
+		favorites.remove((Integer) newsID);
+	}
+
+	public boolean isFavorite(int newsID) {
+		if (favorites.contains((Integer) newsID))
+			return true;
+		return false;
 	}
 
 	public String getUserId() {
